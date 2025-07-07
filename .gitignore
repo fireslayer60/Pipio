@@ -1,0 +1,74 @@
+HELP.md
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+
+# Build output
+/target/
+/bin/
+/out/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+application.properties
+application.yml
+application-local.yml
+
+# Maven
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Postgres/Redis data if used locally
+volumes/
+data/
+*.db
+*.sql
+
+# Security
+**/secrets/
+*.key
+*.pem
+*.crt
+
+# Test coverage
+coverage/
+jacoco.exec
+
+# Node (if frontend is included)
+node_modules/
+dist/
+build/
+
+# Temp
+*.swp
+*.tmp
+*.bak
+
