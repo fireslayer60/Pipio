@@ -7,7 +7,7 @@ import java.util.List;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.LoaderOptions;
-
+import java.util.Optional; 
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +26,7 @@ import com.pipio.model.Pipeline;
 import com.pipio.model.Stage;
 import com.pipio.model.Step;
 import com.pipio.repository.PipelineRepository;
+import com.pipio.service.JobService;
 import com.pipio.service.PipelineService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class PipelineController {
 
     private final PipelineRepository pipelineRepo;
     private final PipelineService pipelineService;
+    private final JobService jobService;
 
     @PostMapping
     public ResponseEntity<?> createPipeline(@RequestParam("file") MultipartFile file,
@@ -79,6 +81,17 @@ public class PipelineController {
                 .map(pipelineService::convertToResponseDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/trigger")
+    public ResponseEntity<?> triggerPipeline(@PathVariable Long id) {
+        Optional<Pipeline> pipelineOpt = pipelineRepo.findById(id);
+        if (pipelineOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        Pipeline pipeline = pipelineOpt.get();
+        
+        jobService.enqueueJob(pipeline); // Step 2
+        return ResponseEntity.ok("Job enqueued");
     }
 }
 
