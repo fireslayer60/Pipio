@@ -1,0 +1,5 @@
+com\pipio\model\StepMessage.class
+com\pipio\service\DockerRunner.class
+com\pipio\model\JobMessage.class
+com\pipio\service\JobWorkerService.class
+com\pipio\WorkerApplication.class
