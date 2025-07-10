@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import com.pipio.dto.PipelineDefinition;
+import com.pipio.dto.PipelineResponse;
 import com.pipio.dto.StageDefinition;
 import com.pipio.dto.StepDefinition;
 import com.pipio.model.Pipeline;
@@ -82,6 +83,21 @@ public class PipelineController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<PipelineResponse>> getAllPipeline() {
+        List<Pipeline> pipes = pipelineRepo.findAll();
+        List<PipelineResponse> pipeResonses = new ArrayList<>();
+        for(Pipeline pipe : pipes){
+            pipeResonses.add(pipelineService.convertToResponseDto(pipe));
+        }
+        //System.out.println(pipeResonses);
+
+
+
+        return ResponseEntity.ok(pipeResonses);
+    }
+    
 
     @PostMapping("/{id}/trigger")
     public ResponseEntity<?> triggerPipeline(@PathVariable Long id) {
