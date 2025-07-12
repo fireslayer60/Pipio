@@ -8,5 +8,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StepMessage {
+    private Long id;
     private String runCommand;
+    private StepStatus status;
 }

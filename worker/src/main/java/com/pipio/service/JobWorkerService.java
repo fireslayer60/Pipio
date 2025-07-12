@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pipio.model.Job;
 import com.pipio.model.JobMessage;
 import com.pipio.model.JobStatus;
+import com.pipio.model.Stage;
+import com.pipio.model.Step;
 import com.pipio.model.StepMessage;
+import com.pipio.model.StepStatus;
 import com.pipio.repository.JobRepository;
+import com.pipio.repository.StepRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,10 +26,12 @@ public class JobWorkerService {
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final JobRepository jobRepo;
+    private final StepRepository stepRepo;
 
-    public JobWorkerService(StringRedisTemplate redisTemplate,JobRepository jobRepo) {
+    public JobWorkerService(StringRedisTemplate redisTemplate,JobRepository jobRepo, StepRepository stepRepo) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = new ObjectMapper();
+        this.stepRepo = stepRepo;
         this.jobRepo = jobRepo;
     }
 
@@ -55,6 +62,16 @@ public class JobWorkerService {
                     boolean failed = false;
 
                     for (StepMessage step : job.getSteps()) {
+                        List<Stage> stages = dbJob.getPipeline().getStages();
+
+                        Step stepEntity = stages.stream()
+                            .flatMap(stage -> stage.getSteps().stream())
+                            .filter(s -> s.getRunCommand().equals(step.getRunCommand()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("No matching step found for: " + step.getRunCommand()));
+                        stepEntity.setStatus(StepStatus.RUNNING);
+                        stepRepo.save(stepEntity);
+
                         int code = DockerRunner.runStep(
                             step.getRunCommand(),
                             String.valueOf(job.getId()),
@@ -63,11 +80,15 @@ public class JobWorkerService {
 
                         if (code != 0) {
                             log.warn("❌ Step failed. Mark job as FAILED.");
+                            stepEntity.setStatus(StepStatus.FAILURE);
+                            stepRepo.save(stepEntity);
                             dbJob.setStatus(JobStatus.FAILED);
                             jobRepo.save(dbJob);
                             failed = true;
                             break;
                         }
+                        stepEntity.setStatus(StepStatus.SUCCESS);
+                        stepRepo.save(stepEntity);
                     }
 
                     if (!failed) {

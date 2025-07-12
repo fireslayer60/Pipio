@@ -3,6 +3,8 @@ package com.pipio.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -22,4 +24,6 @@ public class Step {
     @ManyToOne
     @JsonBackReference
     private Stage stage;
+    @Enumerated(EnumType.STRING)
+    private StepStatus status = StepStatus.PENDING;
 }

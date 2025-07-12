@@ -1,9 +1,12 @@
 package com.pipio.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,5 +73,34 @@ public class JobService {
         dto.setPipelineId(job.getPipeline().getId());
         dto.setPipelineName(job.getPipeline().getName());
         return dto;
+    }
+
+    public List<JobDTO> getAllJobs(){
+        List<Job> allJobs = jobRepo.findAll();
+        List<JobDTO> allJobDTO = new ArrayList<>();
+
+        for(Job job : allJobs){
+            JobDTO dto = new JobDTO();
+            dto.setId(job.getId());
+            dto.setStatus(job.getStatus().name());
+            dto.setAttempts(job.getAttempts());
+            dto.setPipelineId(job.getPipeline().getId());
+            dto.setPipelineName(job.getPipeline().getName());
+            allJobDTO.add(dto);
+        }
+        return allJobDTO;
+    }
+    public Job getJobDetails(Long id){
+        Optional<Job> jobOpt = jobRepo.findById(id);
+        if (jobOpt.isEmpty()) {
+            return null;
+        }
+
+        Job job = jobOpt.get();
+
+        // Manually include stages + steps if they’re lazily fetched
+        //job.getPipeline().getStages().forEach(stage -> stage.getSteps().size());
+
+        return job;
     }
 }
