@@ -7,5 +7,6 @@ import lombok.Data;
 public class PipelineResponse {
     private Long id;
     private String name;
+    private String repoUrl;
     private List<StageResponse> stages;
 }

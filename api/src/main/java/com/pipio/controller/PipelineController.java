@@ -43,37 +43,10 @@ public class PipelineController {
 
     @PostMapping
     public ResponseEntity<?> createPipeline(@RequestParam("file") MultipartFile file,
-                                            @RequestParam("name") String name) throws Exception {
-        LoaderOptions options = new LoaderOptions();
-        Constructor constructor = new Constructor(PipelineDefinition.class, options);
-        Yaml yaml = new Yaml(constructor);
-        PipelineDefinition def = yaml.load(file.getInputStream());
-
-        Pipeline pipeline = new Pipeline();
-        pipeline.setName(name);
-
-        List<Stage> stageList = new ArrayList<>();
-        for (StageDefinition sdef : def.getStages()) {
-            Stage stage = new Stage();
-            stage.setName(sdef.getName());
-            stage.setPipeline(pipeline);
-
-            List<Step> stepList = new ArrayList<>();
-            for (StepDefinition stepDef : sdef.getSteps()) {
-                Step step = new Step();
-                step.setRunCommand(stepDef.getRun());
-                step.setStage(stage);
-                stepList.add(step);
-            }
-            stage.setSteps(stepList);
-            stageList.add(stage);
-        }
-
-        pipeline.setStages(stageList);
-        //asa
-        pipelineRepo.save(pipeline);
-
-        return ResponseEntity.ok(pipeline.getId());
+                                            @RequestParam("name") String name, @RequestParam(value = "repoUrl", required = false) String repoUrl) throws Exception {
+        
+        Long pipelineId = pipelineService.createPipelineFromYaml(file, name, repoUrl);
+        return ResponseEntity.ok(pipelineId);
     }
 
     @GetMapping("/{id}")

@@ -16,15 +16,22 @@ import com.pipio.dto.StepMessage;
 import com.pipio.model.Job;
 import com.pipio.model.JobStatus;
 import com.pipio.model.Pipeline;
+import com.pipio.model.Stage;
+import com.pipio.model.Step;
+import com.pipio.model.StepStatus;
 import com.pipio.repository.JobRepository;
+import com.pipio.repository.StepRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class JobService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JobRepository jobRepo;
+    private final StepRepository stepRepo;
 
     public void enqueueJob(Pipeline pipeline) {
         Job job = Job.builder()
@@ -34,32 +41,41 @@ public class JobService {
             .createdAt(LocalDateTime.now())
             .build();
 
-        jobRepo.save(job); // persist to DB
+        jobRepo.save(job); // Persist job
 
-        // Convert to JobMessage DTO
+        List<StepMessage> stepMessages = new ArrayList<>();
+
+        for (Stage stage : pipeline.getStages()) {
+            for (Step step : stage.getSteps()) {
+                // Set initial step status
+                step.setStatus(StepStatus.PENDING);
+                // Save to generate ID
+                stepRepo.save(step);
+
+                StepMessage sm = new StepMessage();
+                sm.setId(step.getId()); // Needed by worker
+                sm.setRunCommand(step.getRunCommand());
+
+                stepMessages.add(sm);
+            }
+        }
+
         JobMessage jobMessage = new JobMessage();
         jobMessage.setId(job.getId());
         jobMessage.setPipelineName(pipeline.getName());
-
-        List<StepMessage> steps = pipeline.getStages().stream()
-            .flatMap(stage -> stage.getSteps().stream())
-            .map(step -> {
-                StepMessage dto = new StepMessage();
-                dto.setRunCommand(step.getRunCommand());
-                return dto;
-            }).toList();
-
-        jobMessage.setSteps(steps);
+        jobMessage.setSteps(stepMessages);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            redisTemplate.opsForList().leftPush("jobs", mapper.writeValueAsString(jobMessage));
-// worker listens on "jobs"
-            //System.out.println("📤 Enqueued job to Redis: {}"+ json);
+            String json = mapper.writeValueAsString(jobMessage);
+            String wrapped = mapper.writeValueAsString(json); // wrap for Redis
+            redisTemplate.opsForList().leftPush("jobs", wrapped);
+            log.info("📤 Enqueued job {} to Redis", job.getId());
         } catch (Exception e) {
-            System.out.println("❌ Failed to serialize job message"+e);
+            log.error("❌ Failed to serialize job message", e);
         }
     }
+
 
 
     public JobDTO getJobById(Long id) {
