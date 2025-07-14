@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class GithubWebhookService {
     public boolean verifySignature(String payload, String signature, String secret) {
         try {

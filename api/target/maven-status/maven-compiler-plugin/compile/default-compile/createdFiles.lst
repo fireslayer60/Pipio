@@ -1,4 +1,5 @@
 com\pipio\service\PipelineService.class
+com\pipio\controller\GitHubWebhookController.class
 com\pipio\repository\PipelineRepository.class
 com\pipio\service\JobService.class
 com\pipio\dto\StepResponse.class
@@ -21,6 +22,7 @@ com\pipio\repository\StepRepository.class
 com\pipio\dto\StageDefinition.class
 com\pipio\model\JobStatus.class
 com\pipio\model\Step.class
+com\pipio\service\GithubWebhookService.class
 com\pipio\model\Pipeline.class
 com\pipio\model\Job$JobBuilder.class
 com\pipio\config\RedisConfig.class
