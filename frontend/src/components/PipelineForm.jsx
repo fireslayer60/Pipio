@@ -6,6 +6,7 @@ function PipelineForm({ onSubmit }) {
 
     const [pipelineName, setPipelineName] = useState('');
   const [yamlFile, setYamlFile] = useState(null);
+  const [repoUrl, setRepoUrl] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +19,9 @@ function PipelineForm({ onSubmit }) {
     const formData = new FormData();
     formData.append("name", pipelineName);
     formData.append("file", yamlFile);
+    if(repoUrl!=''){
+      formData.append("repoUrl",repoUrl);
+    }
 
     try {
       const res = await axios.post("http://localhost:8080/pipelines", formData, {
@@ -44,6 +48,13 @@ function PipelineForm({ onSubmit }) {
         accept=".yml,.yaml"
         className="border p-2 w-full"
         onChange={(e) => setYamlFile(e.target.files[0])}
+      />
+      <input
+        type="text"
+        placeholder="GitHub Repo URL (https://github.com/user/repo)"
+        value={repoUrl}
+        onChange={(e) => setRepoUrl(e.target.value)}
+        className="w-full p-2 border rounded"
       />
 
       <button

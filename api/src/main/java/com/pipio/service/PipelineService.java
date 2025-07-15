@@ -21,6 +21,9 @@ import com.pipio.repository.PipelineRepository;
 public class PipelineService {
 
     private PipelineRepository pipelineRepo;
+    public PipelineService(PipelineRepository pipelineRepo) {
+        this.pipelineRepo = pipelineRepo;
+    }
 
     public PipelineResponse convertToResponseDto(Pipeline pipeline) {
         PipelineResponse dto = new PipelineResponse();
@@ -54,7 +57,9 @@ public class PipelineService {
 
         Pipeline pipeline = new Pipeline();
         pipeline.setName(name);
-        pipeline.setRepoUrl(repoUrl);
+        if (repoUrl != null && !repoUrl.isBlank()) {
+            pipeline.setRepoUrl(repoUrl);
+        }
 
         List<Stage> stageList = new ArrayList<>();
         for (StageDefinition sdef : def.getStages()) {

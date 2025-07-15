@@ -68,8 +68,7 @@ public class JobService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(jobMessage);
-            String wrapped = mapper.writeValueAsString(json); // wrap for Redis
-            redisTemplate.opsForList().leftPush("jobs", wrapped);
+            redisTemplate.opsForList().leftPush("jobs", json);
             log.info("📤 Enqueued job {} to Redis", job.getId());
         } catch (Exception e) {
             log.error("❌ Failed to serialize job message", e);
