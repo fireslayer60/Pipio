@@ -28,6 +28,8 @@ public class Pipeline {
     @Column(nullable = true)
     private String repoUrl;
 
+    private String baseImage;
+
     @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Stage> stages;

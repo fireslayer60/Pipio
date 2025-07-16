@@ -16,8 +16,11 @@ import com.pipio.model.Stage;
 import com.pipio.model.Step;
 import com.pipio.repository.PipelineRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class PipelineService {
 
     private PipelineRepository pipelineRepo;
@@ -60,6 +63,13 @@ public class PipelineService {
         if (repoUrl != null && !repoUrl.isBlank()) {
             pipeline.setRepoUrl(repoUrl);
         }
+        String baseImage = def.getBaseImage();
+        if (baseImage == null || baseImage.isBlank()) {
+            baseImage = "alpine"; 
+        }
+        pipeline.setBaseImage(baseImage);
+       
+        System.out.println(baseImage +" sss");
 
         List<Stage> stageList = new ArrayList<>();
         for (StageDefinition sdef : def.getStages()) {

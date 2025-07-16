@@ -64,6 +64,7 @@ public class JobService {
         jobMessage.setId(job.getId());
         jobMessage.setPipelineName(pipeline.getName());
         jobMessage.setSteps(stepMessages);
+        jobMessage.setBaseImage(pipeline.getBaseImage());
 
         try {
             ObjectMapper mapper = new ObjectMapper();

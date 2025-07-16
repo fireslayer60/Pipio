@@ -7,9 +7,11 @@ import java.util.List;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.LoaderOptions;
-import java.util.Optional; 
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +25,11 @@ import com.pipio.dto.PipelineDefinition;
 import com.pipio.dto.PipelineResponse;
 import com.pipio.dto.StageDefinition;
 import com.pipio.dto.StepDefinition;
+import com.pipio.model.Job;
 import com.pipio.model.Pipeline;
 import com.pipio.model.Stage;
 import com.pipio.model.Step;
+import com.pipio.repository.JobRepository;
 import com.pipio.repository.PipelineRepository;
 import com.pipio.service.JobService;
 import com.pipio.service.PipelineService;
@@ -40,6 +44,7 @@ public class PipelineController {
     private final PipelineRepository pipelineRepo;
     private final PipelineService pipelineService;
     private final JobService jobService;
+    private final JobRepository jobRepo;
 
     @PostMapping
     public ResponseEntity<?> createPipeline(@RequestParam("file") MultipartFile file,
@@ -82,5 +87,24 @@ public class PipelineController {
         jobService.enqueueJob(pipeline); // Step 2
         return ResponseEntity.ok("Job enqueued");
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePipeline(@PathVariable Long id) {
+        Optional<Pipeline> pipelineOpt = pipelineRepo.findById(id);
+        if (pipelineOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pipeline not found");
+        }
+
+        Pipeline pipeline = pipelineOpt.get();
+
+        // Delete associated jobs first
+        List<Job> jobs = jobRepo.findByPipeline(pipeline);
+        jobRepo.deleteAll(jobs);
+
+        // Now delete pipeline (will cascade delete stages & steps)
+        pipelineRepo.delete(pipeline);
+
+        return ResponseEntity.ok("🗑️ Pipeline and all associated jobs deleted.");
+    }
+
 }
 

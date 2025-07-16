@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 @Slf4j
 public class DockerRunner {
 
-    public static int runStep(String runCommand, String jobId, String stepName) {
+    public static int runStep(String runCommand, String jobId, String stepName, String baseImage) {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
@@ -19,7 +19,7 @@ public class DockerRunner {
             ProcessBuilder pb = new ProcessBuilder(
                 "docker", "run", "--rm",
                 "--name", containerName,
-                "alpine",
+                baseImage,
                 "sh", "-c", safeCommand
             );
 

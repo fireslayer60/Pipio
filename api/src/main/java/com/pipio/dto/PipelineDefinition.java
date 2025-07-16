@@ -6,5 +6,6 @@ import lombok.Data;
 
 @Data
 public class PipelineDefinition {
+    private String baseImage;
     private List<StageDefinition> stages;
 }

@@ -75,7 +75,8 @@ public class JobWorkerService {
                         int code = DockerRunner.runStep(
                             step.getRunCommand(),
                             String.valueOf(job.getId()),
-                            step.getRunCommand()
+                            step.getRunCommand(),
+                            job.getBaseImage()
                         );
 
                         if (code != 0) {

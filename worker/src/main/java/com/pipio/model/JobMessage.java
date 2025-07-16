@@ -13,4 +13,5 @@ public class JobMessage {
     private Long id;
     private String pipelineName;
     private List<StepMessage> steps;
+    private String baseImage;
 }
