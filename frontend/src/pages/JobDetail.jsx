@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import JobLogTerminal from '../components/JobLogTerminal';
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -40,6 +41,8 @@ const JobDetail = () => {
             })
         )}
         </div>
+
+        <JobLogTerminal jobId={id} />
 
     </div>
   );

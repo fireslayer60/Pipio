@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ public class JobWorkerService {
     private final ObjectMapper objectMapper;
     private final JobRepository jobRepo;
     private final StepRepository stepRepo;
+    @Autowired
+    private DockerRunner dockerRunner;
 
     public JobWorkerService(StringRedisTemplate redisTemplate,JobRepository jobRepo, StepRepository stepRepo) {
         this.redisTemplate = redisTemplate;
@@ -72,7 +75,7 @@ public class JobWorkerService {
                         stepEntity.setStatus(StepStatus.RUNNING);
                         stepRepo.save(stepEntity);
 
-                        int code = DockerRunner.runStep(
+                        int code = dockerRunner.runStep(
                             step.getRunCommand(),
                             String.valueOf(job.getId()),
                             step.getRunCommand(),

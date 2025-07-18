@@ -1,19 +1,25 @@
 package com.pipio.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Slf4j
+@Component
 public class DockerRunner {
 
-    public static int runStep(String runCommand, String jobId, String stepName, String baseImage) {
+    private final LogPublisher logPublisher;
+
+    public DockerRunner(LogPublisher logPublisher) {
+        this.logPublisher = logPublisher;
+    }
+
+    public int runStep(String runCommand, String jobId, String stepName, String baseImage) {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
-
-            // Example: docker run --rm --name job-1-step1 alpine sh -c "echo hello"
             String safeCommand = runCommand.replace("\"", "\\\"");
 
             ProcessBuilder pb = new ProcessBuilder(
@@ -30,6 +36,7 @@ public class DockerRunner {
             log.info("📥 Logs for {}:", containerName);
             while ((line = reader.readLine()) != null) {
                 log.info("{}", line);
+                logPublisher.publishLog(jobId, line); // ✅ Now works
             }
 
             int exitCode = process.waitFor();
