@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pipio.dto.JobDTO;
-
+import com.pipio.model.JobLog;
+import com.pipio.service.JobLogService;
 import com.pipio.service.JobService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class JobController {
 
     private final JobService jobService;
+    private final JobLogService logService;
     
 
     @GetMapping("/{id}")
@@ -43,6 +45,14 @@ public class JobController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(jobService.getJobDetails(id));
+    }
+
+    @GetMapping("/logs/{jobId}")
+    public ResponseEntity<List<JobLog>> getLogs(@PathVariable Long jobId) {
+        if(jobService.getJobDetails(jobId)==null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(logService.getLogsForJob(jobId));
     }
 
     

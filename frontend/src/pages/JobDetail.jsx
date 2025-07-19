@@ -33,7 +33,13 @@ const JobDetail = () => {
                 <div key={step.id ?? index} className="relative">
                 <div className="absolute -left-6 top-1 text-xl">{icon}</div>
                 <div className="p-3 border bg-white shadow rounded">
-                    <p><strong>Command:</strong> {step.runCommand}</p>
+                    <p><strong>Command:</strong></p>
+                      <div className="bg-gray-100 text-sm p-2 rounded font-mono">
+                        {step.runCommand.split('\n').map((line, idx) => (
+                          <div key={idx}>{line}</div>
+                        ))}
+                      </div>
+
                     <p><strong>Status:</strong> {step.status}</p>
                 </div>
                 </div>

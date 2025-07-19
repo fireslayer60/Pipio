@@ -1,5 +1,6 @@
 com\pipio\service\PipelineService.class
 com\pipio\controller\GitHubWebhookController.class
+com\pipio\repository\JobLogRepository.class
 com\pipio\repository\PipelineRepository.class
 com\pipio\service\JobService.class
 com\pipio\dto\StepResponse.class
@@ -7,15 +8,16 @@ com\pipio\model\Stage.class
 com\pipio\model\Job.class
 com\pipio\config\WebConfig$1.class
 com\pipio\config\WebConfig.class
-com\pipio\config\RedisLogSubscriber.class
 com\pipio\dto\StepDefinition.class
 com\pipio\dto\StepMessage.class
 com\pipio\repository\JobRepository.class
 com\pipio\dto\JobMessage.class
 com\pipio\model\StepStatus.class
 com\pipio\dto\JobDTO.class
+com\pipio\service\JobLogService.class
 com\pipio\config\WebSocketConfig.class
 com\pipio\dto\StageResponse.class
+com\pipio\model\JobLog.class
 com\pipio\dto\PipelineDefinition.class
 com\pipio\controller\PipelineController.class
 com\pipio\dto\PipelineResponse.class

@@ -8,9 +8,11 @@ C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\PipelineResponse.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\StepDefinition.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\config\RedisConfig.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\JobLog.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Pipeline.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Step.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Job.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\JobLogRepository.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\controller\JobController.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\JobDTO.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\JobStatus.java
@@ -18,7 +20,6 @@ C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\rep
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\config\JobLogWebSocketHandler.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\PipioApplication.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\controller\PipelineController.java
-C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\config\RedisLogSubscriber.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\JobRepository.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\JobMessage.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\StepRepository.java
@@ -28,3 +29,4 @@ C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\config\WebConfig.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Stage.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\StageResponse.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\service\JobLogService.java

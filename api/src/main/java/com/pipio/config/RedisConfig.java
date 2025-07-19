@@ -2,20 +2,17 @@ package com.pipio.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.*;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
 
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(); // Default localhost:6379
-    }
-
-    // For job queues and other complex objects
     @Bean
     public RedisTemplate<String, Object> jobQueueRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -25,17 +22,25 @@ public class RedisConfig {
         return template;
     }
 
-    // For publishing/subscribing plain string logs
     @Bean
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory factory) {
         return new StringRedisTemplate(factory);
     }
 
-    // For pub/sub log subscription
-    @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory factory) {
+    @Bean(name = "redisMessageListenerContainer", initMethod = "start", destroyMethod = "stop")
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory factory, Executor redisTaskExecutor) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(factory);
+        container.setTaskExecutor(redisTaskExecutor);
         return container;
+    }
+
+    @Bean(name = "redisTaskExecutor")
+    public Executor redisTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setThreadNamePrefix("redis-listener-");
+        executor.initialize();
+        return executor;
     }
 }
