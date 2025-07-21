@@ -78,10 +78,12 @@ public class PipelineService {
             stage.setPipeline(pipeline);
 
             List<Step> stepList = new ArrayList<>();
+            int stepIndex = 0;
             for (StepDefinition stepDef : sdef.getSteps()) {
                 Step step = new Step();
                 step.setRunCommand(stepDef.getRun());
                 step.setStage(stage);
+                step.setStepOrder(stepIndex++);
                 stepList.add(step);
             }
 

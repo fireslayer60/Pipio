@@ -2,6 +2,7 @@ package com.pipio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,4 +27,7 @@ public class Step {
     private Stage stage;
     @Enumerated(EnumType.STRING)
     private StepStatus status = StepStatus.PENDING;
+
+    @Column(name = "step_order")
+    private Integer stepOrder;
 }
