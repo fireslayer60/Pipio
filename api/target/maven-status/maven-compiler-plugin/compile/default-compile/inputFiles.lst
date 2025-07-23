@@ -6,9 +6,11 @@ C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\con
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\service\PipelineService.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\StepResponse.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\PipelineResponse.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\SecretDto.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\StepDefinition.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\config\RedisConfig.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\JobLog.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Secret.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Pipeline.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Step.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\model\Job.java
@@ -23,6 +25,7 @@ C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\con
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\JobRepository.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\JobMessage.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\StepRepository.java
+C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\repository\SecretRepository.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\service\GithubWebhookService.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\service\JobService.java
 C:\Users\krish\OneDrive\Desktop\java\Pipio\pipio\api\src\main\java\com\pipio\dto\PipelineDefinition.java

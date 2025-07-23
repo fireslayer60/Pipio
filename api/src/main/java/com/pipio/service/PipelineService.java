@@ -3,6 +3,9 @@ package com.pipio.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jasypt.encryption.StringEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -12,9 +15,11 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 import com.pipio.dto.*;
 import com.pipio.model.Pipeline;
+import com.pipio.model.Secret;
 import com.pipio.model.Stage;
 import com.pipio.model.Step;
 import com.pipio.repository.PipelineRepository;
+import com.pipio.repository.SecretRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,10 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class PipelineService {
+    
+    private final StringEncryptor encryptor;
+    private final PipelineRepository pipelineRepo;
+    private final SecretRepository secretRepository;
 
-    private PipelineRepository pipelineRepo;
-    public PipelineService(PipelineRepository pipelineRepo) {
+    public PipelineService(PipelineRepository pipelineRepo, StringEncryptor encryptor, SecretRepository secretRepository) {
         this.pipelineRepo = pipelineRepo;
+        this.encryptor = encryptor;
+        this.secretRepository = secretRepository;
     }
 
     public PipelineResponse convertToResponseDto(Pipeline pipeline) {
@@ -94,6 +104,14 @@ public class PipelineService {
         pipeline.setStages(stageList);
         pipelineRepo.save(pipeline);
         return pipeline.getId();
+    }
+    public void saveSecret(SecretDto dto, Pipeline pipeline) {
+        Secret secret = new Secret();
+        secret.setName(dto.getName());
+        secret.setValue(encryptor.encrypt(dto.getValue()));
+        secret.setType(dto.getType());
+        secret.setPipeline(pipeline);
+        secretRepository.save(secret);
     }
 }
 

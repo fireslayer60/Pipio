@@ -4,18 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pipio.model.Job;
 import com.pipio.model.JobMessage;
 import com.pipio.model.JobStatus;
+import com.pipio.model.Secret;
 import com.pipio.model.Stage;
 import com.pipio.model.Step;
 import com.pipio.model.StepMessage;
 import com.pipio.model.StepStatus;
 import com.pipio.repository.JobRepository;
+import com.pipio.repository.SecretRepository;
 import com.pipio.repository.StepRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,14 +34,20 @@ public class JobWorkerService {
     private final ObjectMapper objectMapper;
     private final JobRepository jobRepo;
     private final StepRepository stepRepo;
+    private final SecretRepository secretRepository;
+    private StringEncryptor encryptor;
     @Autowired
     private DockerRunner dockerRunner;
+   
+    
 
-    public JobWorkerService(StringRedisTemplate redisTemplate,JobRepository jobRepo, StepRepository stepRepo) {
+    public JobWorkerService(StringRedisTemplate redisTemplate,JobRepository jobRepo, StepRepository stepRepo, SecretRepository secretRepository, StringEncryptor encryptor) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = new ObjectMapper();
         this.stepRepo = stepRepo;
         this.jobRepo = jobRepo;
+        this.secretRepository = secretRepository;
+        this.encryptor = encryptor;
     }
 
     public void startWorker() {
@@ -61,6 +73,7 @@ public class JobWorkerService {
                     Job dbJob = optionalJob.get();
                     dbJob.setStatus(JobStatus.RUNNING);
                     jobRepo.save(dbJob);
+                    long pipelineId = dbJob.getPipeline().getId();
 
                     boolean failed = false;
 
@@ -74,12 +87,24 @@ public class JobWorkerService {
                             .orElseThrow(() -> new RuntimeException("No matching step found for: " + step.getRunCommand()));
                         stepEntity.setStatus(StepStatus.RUNNING);
                         stepRepo.save(stepEntity);
+                        List<Secret> secrets = secretRepository.findByPipelineId(pipelineId);
+                           
+
+                            Map<String, String> envSecrets = secrets.stream()
+                                .filter(secret -> "env".equals(secret.getType()))
+                                .collect(Collectors.toMap(
+                                    Secret::getName,
+                                    secret -> String.valueOf(encryptor.decrypt(secret.getValue()))
+                                ));
+
+
 
                         int code = dockerRunner.runStep(
                             step.getRunCommand(),
                             String.valueOf(job.getId()),
                             step.getRunCommand(),
-                            job.getBaseImage()
+                            job.getBaseImage(),
+                            envSecrets
                         );
 
                         if (code != 0) {

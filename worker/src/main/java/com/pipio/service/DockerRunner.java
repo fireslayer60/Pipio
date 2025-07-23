@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import com.pipio.service.JobLogService;
 
@@ -22,18 +25,33 @@ public class DockerRunner {
         
     }
 
-    public int runStep(String runCommand, String jobId, String stepName, String baseImage) {
+    public int runStep(String runCommand, String jobId, String stepName, String baseImage, Map<String, String> envSecrets) {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
             String safeCommand = runCommand.replace("\"", "\\\"");
 
-            ProcessBuilder pb = new ProcessBuilder(
-                "docker", "run", "--rm",
-                "--name", containerName,
-                baseImage,
-                "sh", "-c", safeCommand
-            );
+            // Build the docker command
+            List<String> command = new ArrayList<>();
+            command.add("docker");
+            command.add("run");
+            command.add("--rm");
+            command.add("--name");
+            command.add(containerName);
+
+            // ✅ Add environment variable flags
+            for (Map.Entry<String, String> entry : envSecrets.entrySet()) {
+                command.add("-e");
+                command.add(entry.getKey() + "=" + entry.getValue());
+            }
+
+            command.add(baseImage);
+            command.add("sh");
+            command.add("-c");
+            command.add(safeCommand);
+
+            // Launch the process
+            ProcessBuilder pb = new ProcessBuilder(command);
 
             Process process = pb.start();
 
