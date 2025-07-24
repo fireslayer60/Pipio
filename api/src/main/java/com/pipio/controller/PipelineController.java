@@ -117,6 +117,16 @@ public class PipelineController {
         return ResponseEntity.ok("Secret added");
     }
 
+    @PostMapping("/{id}/fileSecret")
+    public ResponseEntity<?> addFileSecret(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file) {
+        Pipeline pipeline = pipelineRepo.findById(id).orElseThrow();
+        pipelineService.saveFileSecret(file, pipeline);
+        return ResponseEntity.ok("File secret added");
+    }
+
 
 }
 

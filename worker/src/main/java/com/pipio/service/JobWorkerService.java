@@ -15,6 +15,7 @@ import com.pipio.repository.StepRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,14 +89,16 @@ public class JobWorkerService {
                         stepEntity.setStatus(StepStatus.RUNNING);
                         stepRepo.save(stepEntity);
                         List<Secret> secrets = secretRepository.findByPipelineId(pipelineId);
-                           
+                        Map<String, String> envSecrets = new HashMap<>();
+                        List<String> fileMountPaths = new ArrayList<>();
 
-                            Map<String, String> envSecrets = secrets.stream()
-                                .filter(secret -> "env".equals(secret.getType()))
-                                .collect(Collectors.toMap(
-                                    Secret::getName,
-                                    secret -> String.valueOf(encryptor.decrypt(secret.getValue()))
-                                ));
+                        for (Secret secret : secrets) {
+                            if ("env".equals(secret.getType())) {
+                                envSecrets.put(secret.getName(), encryptor.decrypt(secret.getValue()));
+                            } else if ("file".equals(secret.getType())) {
+                                fileMountPaths.add(secret.getFilePath());
+                            }
+                        }
 
 
 
@@ -104,7 +107,8 @@ public class JobWorkerService {
                             String.valueOf(job.getId()),
                             step.getRunCommand(),
                             job.getBaseImage(),
-                            envSecrets
+                            envSecrets,
+                            fileMountPaths
                         );
 
                         if (code != 0) {

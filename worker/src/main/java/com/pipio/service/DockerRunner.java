@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class DockerRunner {
         
     }
 
-    public int runStep(String runCommand, String jobId, String stepName, String baseImage, Map<String, String> envSecrets) {
+    public int runStep(String runCommand, String jobId, String stepName, String baseImage, Map<String, String> envSecrets, List<String> fileMountPaths) {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
@@ -38,6 +40,12 @@ public class DockerRunner {
             command.add("--rm");
             command.add("--name");
             command.add(containerName);
+            for (String filePath : fileMountPaths) {
+                Path p = Paths.get(filePath);
+                String containerPath = "/run/secrets/" + p.getFileName();
+                command.add("-v");
+                command.add(p.toAbsolutePath() + ":" + containerPath);
+            }
 
             // ✅ Add environment variable flags
             for (Map.Entry<String, String> entry : envSecrets.entrySet()) {

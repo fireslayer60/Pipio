@@ -24,5 +24,7 @@ public class Secret {
     @ManyToOne
     @JoinColumn(name = "pipeline_id")
     private Pipeline pipeline;
-    //need to do secret dto
+
+    private String filePath; 
+    
 }

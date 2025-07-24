@@ -1,5 +1,9 @@
 package com.pipio.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,5 +117,26 @@ public class PipelineService {
         secret.setPipeline(pipeline);
         secretRepository.save(secret);
     }
+    public void saveFileSecret(MultipartFile file, Pipeline pipeline) {
+        try {
+            String baseDir = "/opt/pipio/secrets/" + pipeline.getId();
+            Files.createDirectories(Paths.get(baseDir));
+
+            Path destination = Paths.get(baseDir, file.getOriginalFilename());
+            file.transferTo(destination.toFile()); // Save the file physically
+
+            Secret secret = new Secret();
+            secret.setName(file.getOriginalFilename());
+            secret.setType("file");
+            secret.setPipeline(pipeline);
+            secret.setFilePath(destination.toAbsolutePath().toString()); // This will be used for docker mount
+            secret.setValue(null); // No need to store content in DB
+
+            secretRepository.save(secret);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save secret file", e);
+        }
+    }
+
 }
 
