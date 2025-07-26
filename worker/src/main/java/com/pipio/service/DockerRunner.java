@@ -31,7 +31,8 @@ public class DockerRunner {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
-            String safeCommand = runCommand.replace("\"", "\\\"");
+            String safeCommand = "ls -l /run/secrets && " + runCommand.replace("\"", "\\\"");
+
 
             // Build the docker command
             List<String> command = new ArrayList<>();
@@ -44,7 +45,12 @@ public class DockerRunner {
                 Path p = Paths.get(filePath);
                 String containerPath = "/run/secrets/" + p.getFileName();
                 command.add("-v");
-                command.add(p.toAbsolutePath() + ":" + containerPath);
+                String dockerHostPath = p.toAbsolutePath().toString()
+                    .replace("\\", "/")                   // Backslashes to forward slashes
+                    .replaceFirst("^([A-Za-z]):", "/$1"); // C: → /c
+                log.info("Mounting {} to {}", dockerHostPath, containerPath);
+
+                command.add(dockerHostPath.toLowerCase() + ":" + containerPath);
             }
 
             // ✅ Add environment variable flags

@@ -29,10 +29,12 @@ import com.pipio.dto.StageDefinition;
 import com.pipio.dto.StepDefinition;
 import com.pipio.model.Job;
 import com.pipio.model.Pipeline;
+import com.pipio.model.Secret;
 import com.pipio.model.Stage;
 import com.pipio.model.Step;
 import com.pipio.repository.JobRepository;
 import com.pipio.repository.PipelineRepository;
+import com.pipio.repository.SecretRepository;
 import com.pipio.service.JobService;
 import com.pipio.service.PipelineService;
 
@@ -47,6 +49,7 @@ public class PipelineController {
     private final PipelineService pipelineService;
     private final JobService jobService;
     private final JobRepository jobRepo;
+    private final SecretRepository secretRepository;
     
 
     @PostMapping
@@ -102,6 +105,8 @@ public class PipelineController {
         // Delete associated jobs first
         List<Job> jobs = jobRepo.findByPipeline(pipeline);
         jobRepo.deleteAll(jobs);
+        List<Secret> secrets = secretRepository.findByPipelineId(id);
+        secretRepository.deleteAll(secrets);
 
         // Now delete pipeline (will cascade delete stages & steps)
         pipelineRepo.delete(pipeline);
