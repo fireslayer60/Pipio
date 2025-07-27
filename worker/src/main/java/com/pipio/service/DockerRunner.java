@@ -55,6 +55,7 @@ public class DockerRunner {
 
             // ✅ Add environment variable flags
             for (Map.Entry<String, String> entry : envSecrets.entrySet()) {
+                //log.info(entry.getKey() + " = " + entry.getValue());
                 command.add("-e");
                 command.add(entry.getKey() + "=" + entry.getValue());
             }
