@@ -119,4 +119,19 @@ public class JobService {
 
         return job;
     }
+
+    public List<JobDTO> getJobForPipeline(Long pipelineId) {
+        List<Job> jobs = jobRepo.findByPipelineId(pipelineId);
+        List<JobDTO> jobDTOs = new ArrayList<>();
+        for (Job job : jobs) {
+            JobDTO dto = new JobDTO();
+            dto.setId(job.getId());
+            dto.setStatus(job.getStatus().name());
+            dto.setAttempts(job.getAttempts());
+            dto.setPipelineId(job.getPipeline().getId());
+            dto.setPipelineName(job.getPipeline().getName());
+            jobDTOs.add(dto);
+        }
+        return jobDTOs;
+    }
 }

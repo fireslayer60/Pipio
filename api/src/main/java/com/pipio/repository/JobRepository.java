@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByPipeline(Pipeline pipeline);
+    List<Job> findByPipelineId(Long pipelineId);
 }
 

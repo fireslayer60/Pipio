@@ -16,6 +16,8 @@ import com.pipio.service.JobLogService;
 import com.pipio.service.JobService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -54,6 +56,18 @@ public class JobController {
         }
         return ResponseEntity.ok(logService.getLogsForJob(jobId));
     }
+
+    @GetMapping("/getpipeline/{Id}")
+    public ResponseEntity<?> getJobForPipeline(@PathVariable Long Id) {
+        List<JobDTO> job = jobService.getJobForPipeline(Id);
+        if (job.size()>0) {
+            return ResponseEntity.ok(job);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    
 
     
     

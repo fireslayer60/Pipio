@@ -102,13 +102,13 @@ public class PipelineController {
 
         Pipeline pipeline = pipelineOpt.get();
 
-        // Delete associated jobs first
+       
         List<Job> jobs = jobRepo.findByPipeline(pipeline);
         jobRepo.deleteAll(jobs);
         List<Secret> secrets = secretRepository.findByPipelineId(id);
         secretRepository.deleteAll(secrets);
 
-        // Now delete pipeline (will cascade delete stages & steps)
+       
         pipelineRepo.delete(pipeline);
 
         return ResponseEntity.ok("🗑️ Pipeline and all associated jobs deleted.");
@@ -131,6 +131,20 @@ public class PipelineController {
         pipelineService.saveFileSecret(file, pipeline);
         return ResponseEntity.ok("File secret added");
     }
+
+    @GetMapping("/{id}/getSecrets")
+    public ResponseEntity<?> getSecrets(@PathVariable Long id) {
+        return ResponseEntity.ok(pipelineService.getSecretsByPipelineId(id));
+    }
+
+    @DeleteMapping("/secrets/{id}")
+    public ResponseEntity<String> deleteSecret(@PathVariable Long id) {
+        pipelineService.deleteSecret(id);
+
+        return ResponseEntity.ok("🗑️ Secret deleted.");
+    }
+    
+    
 
 
 }

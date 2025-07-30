@@ -140,6 +140,13 @@ public class PipelineService {
             throw new RuntimeException("Failed to save secret file", e);
         }
     }
+    public List<Secret> getSecretsByPipelineId(Long pipelineId) {
+        return secretRepository.findByPipelineId(pipelineId);
+    }
+    public void deleteSecret(Long secretId) {
+        Secret secret = secretRepository.findById(secretId).orElseThrow();
+        secretRepository.delete(secret);
+    }
 
 }
 

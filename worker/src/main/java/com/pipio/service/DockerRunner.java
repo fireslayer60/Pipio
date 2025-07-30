@@ -31,7 +31,8 @@ public class DockerRunner {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
-            String safeCommand = "ls -l /run/secrets && " + runCommand.replace("\"", "\\\"");
+            String safeCommand = "mkdir -p /run/secrets && ls -l /run/secrets && " + runCommand.replace("\"", "\\\"");
+
 
 
             // Build the docker command
