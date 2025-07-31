@@ -7,15 +7,62 @@ services:
       POSTGRES_DB: pipeforge
       POSTGRES_USER: pipeforge
       POSTGRES_PASSWORD: secret
-    ports:
-      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - pipio-net
 
   redis:
     image: redis:7
+    restart: always
+    networks:
+      - pipio-net
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pipeforge
+      - SPRING_REDIS_HOST=redis
+    networks:
+      - pipio-net
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pipeforge
+      - SPRING_REDIS_HOST=redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - pipio-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: always
     ports:
-      - "6379:6379"
+      - "18080:80"
+    depends_on:
+      - api
+    networks:
+      - pipio-net
+
+networks:
+  pipio-net:
+    driver: bridge
 
 volumes:
   pgdata:
