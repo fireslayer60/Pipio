@@ -13,7 +13,7 @@ const useJobLogs = (jobId) => {
       setError(null);
 
       try {
-        const response = await fetch(`http://localhost:8080/jobs/logs/${jobId}`);
+        const response = await fetch(`/api/jobs/logs/${jobId}`);
         if (!response.ok) throw new Error('Failed to fetch logs');
 
         const data = await response.json();

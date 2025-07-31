@@ -8,7 +8,7 @@ const JobDetail = () => {
   const [job, setJob] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/jobs/details/${id}`)
+    axios.get(`/api/jobs/details/${id}`)
       .then(res => setJob(res.data))
       .catch(err => console.error(err));
   }, [id]);

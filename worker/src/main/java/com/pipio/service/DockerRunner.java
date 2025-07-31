@@ -76,7 +76,7 @@ public class DockerRunner {
             log.info("📥 Logs for {}:", containerName);
             while ((line = reader.readLine()) != null) {
                 log.info("{}", line);
-                logPublisher.publishLog(jobId, line); // ✅ Now works
+                
                 logPublisher.saveLog((long)(Integer.parseInt(jobId)), line);
             }
 

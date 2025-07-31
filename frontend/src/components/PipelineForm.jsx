@@ -24,7 +24,7 @@ function PipelineForm({ onSubmit }) {
     }
 
     try {
-      const res = await axios.post("http://localhost:8080/pipelines", formData, {
+      const res = await axios.post("/api/pipelines", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       console.log("Pipeline created with ID:", res.data);

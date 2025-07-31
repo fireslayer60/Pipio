@@ -7,7 +7,7 @@ export default function JobHistory() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8080/jobs/all")
+    axios.get("/api/jobs/all")
       .then((res) => {setJobs(res.data);})
       .catch((err) => console.error("Error fetching jobs", err));
       

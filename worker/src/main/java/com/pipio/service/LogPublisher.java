@@ -15,15 +15,11 @@ public class LogPublisher {
 
     private  final String LOG_CHANNEL_PREFIX = "job-logs:";
 
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+ 
     @Autowired
     private JobLogRepository repository;
 
-    public void publishLog(String jobId, String logLine) {
-        String channel = LOG_CHANNEL_PREFIX + jobId;
-        redisTemplate.convertAndSend(channel, logLine);
-    }
+   
     public void saveLog(Long jobId, String message) {
         JobLog log = new JobLog();
         log.setJobId(jobId);

@@ -12,14 +12,14 @@ export default function PipelineDetails() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/pipelines/${id}`)
+    axios.get(`/api/pipelines/${id}`)
       .then((res) => setPipeline(res.data))
       .catch((err) => console.error("Failed to fetch pipeline", err));
     
-    axios.get(`http://localhost:8080/pipelines/${id}/getSecrets`)
+    axios.get(`/api/pipelines/${id}/getSecrets`)
       .then((res) => setSecrets(res.data))
       .catch((err) => console.error("Failed to fetch pipeline", err));
-    axios.get(`http://localhost:8080/jobs/getpipeline/${id}`)
+    axios.get(`/api/jobs/getpipeline/${id}`)
       .then(res => setJobs(res.data))
       .catch(err => setError('Failed to load jobs.'));
 
@@ -28,7 +28,7 @@ export default function PipelineDetails() {
 
   const handleTrigger = async () => {
     try {
-      await axios.post(`http://localhost:8080/pipelines/${id}/trigger`);
+      await axios.post(`/api/pipelines/${id}/trigger`);
       alert("Triggered!");
     } catch (err) {
       alert("Trigger failed");
@@ -37,7 +37,7 @@ export default function PipelineDetails() {
 
   const handleAddSecret = async () => {
     try {
-      await axios.post(`http://localhost:8080/pipelines/${id}/secrets`, secret);
+      await axios.post(`/api/pipelines/${id}/secrets`, secret);
       alert("Secret added!");
     } catch (err) {
       alert("Failed to add secret");
@@ -46,7 +46,7 @@ export default function PipelineDetails() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8080/pipelines/${id}`);
+      await axios.delete(`/api/pipelines/${id}`);
       alert("Pipeline deleted");
       navigate("/"); // Go back to home
     } catch (err) {
@@ -55,7 +55,7 @@ export default function PipelineDetails() {
   };
   const handleDeleteSecret = async (secretId) => {
     try { 
-      await axios.delete(`http://localhost:8080/pipelines/secrets/${secretId}`);
+      await axios.delete(`/api/pipelines/secrets/${secretId}`);
       alert("Secret deleted");
     } catch (err) {
       alert("Failed to delete secret");

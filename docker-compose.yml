@@ -11,12 +11,24 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - pipio-net
+    # ADDED: Health check to ensure postgres is ready before dependents start
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pipeforge -d pipeforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7
     restart: always
     networks:
       - pipio-net
+    # ADDED: Health check to ensure redis is ready before dependents start
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
@@ -24,13 +36,24 @@ services:
       dockerfile: api/Dockerfile
     restart: always
     depends_on:
-      - postgres
-      - redis
+      # CHANGED: Wait for the services to be healthy, not just started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pipeforge
+      - SPRING_DATASOURCE_USERNAME=pipeforge  
+      - SPRING_DATASOURCE_PASSWORD=secret
       - SPRING_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - pipio-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   worker:
     build:
@@ -38,11 +61,17 @@ services:
       dockerfile: worker/Dockerfile
     restart: always
     depends_on:
-      - postgres
-      - redis
+      # CHANGED: Wait for the services to be healthy, not just started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pipeforge
+      - SPRING_DATASOURCE_USERNAME=pipeforge  
+      - SPRING_DATASOURCE_PASSWORD=secret
       - SPRING_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -56,7 +85,9 @@ services:
     ports:
       - "18080:80"
     depends_on:
-      - api
+      # CHANGED: Wait for the api service to be healthy (optional but good practice)
+      api:
+        condition: service_healthy
     networks:
       - pipio-net
 
