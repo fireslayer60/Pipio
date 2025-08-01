@@ -7,9 +7,13 @@ export default function PipelineDetails() {
   const { id } = useParams(); // pipeline ID from URL
   const navigate = useNavigate();
   const [pipeline, setPipeline] = useState(null);
+  const [file, setFile] = useState(null);
+  const [name, setName] = useState("");
   const [secret, setSecret] = useState({ name: "", value: "", type: "env" });
   const [secrets, setSecrets] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get(`/api/pipelines/${id}`)
@@ -25,6 +29,45 @@ export default function PipelineDetails() {
 
     
   }, [id]);
+
+  const handleSubmitFile = async (e) => {
+    e.preventDefault();
+    if (!name.trim() || !file) {
+      setError("Secret name and file are required.");
+      return;
+    }
+    setUploading(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("file", file);
+
+    try {
+      await axios.post(
+        `/api/pipelines/${id}/fileSecret`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setName("");
+      setFile(null);
+      if (onUploadSuccess) onUploadSuccess();
+      alert("File secret uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to upload file secret.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   const handleTrigger = async () => {
     try {
@@ -163,6 +206,41 @@ export default function PipelineDetails() {
           </button>
         </div>
       </div>
+      <form onSubmit={handleSubmitFile} className="space-y-4 p-4 border rounded bg-white max-w-md">
+      <h3 className="text-lg font-semibold">Upload File Secret</h3>
+
+      <div>
+        <label className="block mb-1 font-medium">Secret Name</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+          disabled={uploading}
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 font-medium">Select File</label>
+        <input
+          type="file"
+          onChange={handleFileChange}
+          disabled={uploading}
+          required
+        />
+      </div>
+
+      {error && <p className="text-red-600">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={uploading}
+        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        {uploading ? "Uploading..." : "Upload File Secret"}
+      </button>
+    </form>
       <div>
       <h2 className="text-xl font-bold mb-4">Jobs for Pipeline {id}</h2>
       <table className="min-w-full border">

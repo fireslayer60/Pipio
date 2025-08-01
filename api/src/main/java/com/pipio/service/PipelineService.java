@@ -119,20 +119,21 @@ public class PipelineService {
     }
     public void saveFileSecret(MultipartFile file, Pipeline pipeline) {
         try {
-            String baseDir = System.getProperty("user.home") + "/pipio/secrets/" + pipeline.getId();
+         
+            String dockerDir = "/mnt/secrets/" + pipeline.getId();
+            Files.createDirectories(Paths.get(dockerDir));
+            Path dockerPath = Paths.get(dockerDir,file.getOriginalFilename());
 
-            Files.createDirectories(Paths.get(baseDir));
-
-            Path destination = Paths.get(baseDir, file.getOriginalFilename());
-            System.out.println("Saving file to: " + destination.toAbsolutePath());
-            file.transferTo(destination.toFile()); // Save the file physically
+            
+            System.out.println("Saving file to: " + dockerPath.toAbsolutePath());
+            file.transferTo(dockerPath.toFile()); // Save the file physically
             System.out.println("File saved!");
 
             Secret secret = new Secret();
             secret.setName(file.getOriginalFilename());
             secret.setType("file");
             secret.setPipeline(pipeline);
-            secret.setFilePath(destination.toAbsolutePath().toString()); // This will be used for docker mount
+            secret.setFilePath(dockerPath.toAbsolutePath().toString()); // This will be used for docker mount
             secret.setValue(null); // No need to store content in DB
 
             secretRepository.save(secret);

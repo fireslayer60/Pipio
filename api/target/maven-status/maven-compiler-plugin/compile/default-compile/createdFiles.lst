@@ -1,4 +1,3 @@
-com\pipio\config\WebSocketConfig.class
 com\pipio\dto\StageResponse.class
 com\pipio\service\PipelineService.class
 com\pipio\controller\GitHubWebhookController.class
@@ -17,7 +16,6 @@ com\pipio\dto\StepDefinition.class
 com\pipio\service\GithubWebhookService.class
 com\pipio\dto\StepMessage.class
 com\pipio\dto\JobMessage.class
-com\pipio\config\JobLogWebSocketHandler.class
 com\pipio\config\RedisConfig.class
 com\pipio\dto\JobDTO.class
 com\pipio\PipioApplication.class

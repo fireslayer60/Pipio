@@ -31,7 +31,7 @@ public class DockerRunner {
         try {
             String containerName = "job-" + jobId + "-" + stepName.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-+", "-").toLowerCase();
 
-            String safeCommand = "mkdir -p /run/secrets && ls -l /run/secrets && " + runCommand.replace("\"", "\\\"");
+            String safeCommand = "mkdir -p /tmp/secrets && ls -l /tmp/secrets && " + runCommand.replace("\"", "\\\"");
 
 
 
@@ -44,15 +44,21 @@ public class DockerRunner {
             command.add(containerName);
             for (String filePath : fileMountPaths) {
                 Path p = Paths.get(filePath);
-                String containerPath = "/run/secrets/" + p.getFileName();
-                command.add("-v");
-                String dockerHostPath = p.toAbsolutePath().toString()
-                    .replace("\\", "/")                   // Backslashes to forward slashes
-                    .replaceFirst("^([A-Za-z]):", "/$1"); // C: → /c
-                log.info("Mounting {} to {}", dockerHostPath, containerPath);
+                String fileName = p.getFileName().toString();
+                String containerPath = "/tmp/secrets/" + fileName;
 
-                command.add(dockerHostPath.toLowerCase() + ":" + containerPath);
+                // Directly use filePath assuming it's under /mnt/secrets
+                String dockerHostPath = filePath;
+
+                log.info("Mounting {} to {}", dockerHostPath, containerPath);
+                command.add("-v");
+                command.add(dockerHostPath + ":" + containerPath);
             }
+
+
+
+
+
 
             // ✅ Add environment variable flags
             for (Map.Entry<String, String> entry : envSecrets.entrySet()) {
@@ -72,12 +78,19 @@ public class DockerRunner {
             Process process = pb.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String line;
-            log.info("📥 Logs for {}:", containerName);
+            log.info("📥 Logs for {}:", containerName );
+            log.info("base image used {} ",baseImage);
             while ((line = reader.readLine()) != null) {
                 log.info("{}", line);
                 
                 logPublisher.saveLog((long)(Integer.parseInt(jobId)), line);
+            }
+             // Capture STDERR
+            while ((line = stdErr.readLine()) != null) {
+                log.error("[STDERR] {}", line);
+                logPublisher.saveLog(Long.parseLong(jobId), line);
             }
 
             int exitCode = process.waitFor();
